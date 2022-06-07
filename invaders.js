@@ -1,37 +1,94 @@
-let player = {
-    x: 400,
-    y: 580
-};
+class Bullet {
+    x;
+    y;
+
+    constructor(x, y) {
+        this.x = x;
+        this.y = y;
+    }
+
+    update() {
+        this.y -=10;
+    }
+
+    draw(context) {
+        context.fillStyle = "purple";
+        context.beginPath();
+        context.arc(this.x, this.y, 3.5, 0, Math.PI * 2);
+        context.fill();
+    }
+}
 
 let bullets = [];
+
+class Enemy {
+    x;
+    y;
+
+    constructor(x, y) {
+        this.x = x;
+        this.y = y;
+    }
+}
+
+let enemies = [];
+
+let player = {
+    x: 400,
+    y: 580,
+    cooldown: 0,
+
+    update: function() {
+        if(keys.left && this.x > 10) {
+            this.x -= 10;
+        }
+
+    if(keys.right && this.x < 790){
+            this.x += 10;
+        }
+
+    if(keys.up && this.y > 0){
+            this.y -= 10;
+        }
+
+    if(keys.down && this.y < 580){
+            this.y += 10;
+        }
+    if(this.cooldown > 0) {
+        this.cooldown --;
+    }
+    },
+
+    draw: function(context) {
+    context.fillStyle = "lightgreen";
+    // context.fillRect(390, 580, 20, 20)
+    context.beginPath();
+    context.moveTo(this.x, this.y);
+    context.lineTo(this.x - 10, this.y + 20);
+    context.lineTo(this.x + 10, this.y + 20);
+    context.fill();
+    },
+
+    shoot: function() {
+        this.cooldown = 15;
+        return new Bullet(this.x, this.y);
+    }
+};
 
 let keys = {
     up: false,
     down: false,
     right: false,
-    left: false
+    left: false,
+    shoot: false
 }
 
 function update() {
-    if(keys.left) {
-        if(player.x > 10) {
-            player.x -= 10;
-        }
-    }
-    if(keys.right) {
-        if(player.x < 790){
-            player.x += 10;
-        }
-    }
-    if(keys.up) {
-        if(player.y > 0){
-            player.y -= 10;
-        }
-    }
-    if(keys.down) {
-        if(player.y < 580){
-            player.y += 10;
-        }
+    player.update();
+
+    if(keys.shoot && player.cooldown == 0) {
+        let bullet = player.shoot();
+        bullets.push(bullet);
     }
 
     for(let index = 0; index < bullets.length; index++) {
@@ -65,19 +122,10 @@ function drawPlayer() {
     context.fillStyle = "black";
     context.fillRect(0, 0, 800, 600);
 
-    context.fillStyle = "lightgreen";
-    // context.fillRect(390, 580, 20, 20)
-    context.beginPath();
-    context.moveTo(player.x, player.y);
-    context.lineTo(player.x - 10, player.y + 20);
-    context.lineTo(player.x + 10, player.y + 20);
-    context.fill();
+    player.draw(context);
 
     for(let index = 0; index < bullets.length; index++) {
-        context.fillStyle = "green";
-        context.beginPath();
-        context.arc(bullets[index].x, bullets[index].y, 3.5, 0, Math.PI * 2);
-        context.fill();
+        bullets[index].draw(context);
     }
 }
 
@@ -97,10 +145,7 @@ function movePlayer(event) {
             break;
 
         case " ":
-            bullets.push( {
-                x: player.x, 
-                y: player.y
-            } );
+            keys.shoot = true;
             break;
     }
 }
@@ -118,6 +163,9 @@ function keyUp(event) {
             break;
         case "ArrowDown":
             keys.down = false;
+            break;
+        case " ":
+            keys.shoot = false;
             break;
     }
 }
