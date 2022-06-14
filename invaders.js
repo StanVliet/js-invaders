@@ -1,6 +1,11 @@
 const enemyimg = new Image();
-
 enemyimg.src = 'images/ufo.png';
+
+const playerimg = new Image();
+playerimg.src = 'images/spaceship.png';
+
+const ruimteimg = new Image();
+ruimteimg.src = 'images/ruimte.jpg';
 
 class Bullet {
     x;
@@ -101,13 +106,7 @@ let player = {
     },
 
     draw: function(context) {
-    context.fillStyle = "pink";
-    // context.fillRect(390, 580, 20, 20)
-    context.beginPath();
-    context.moveTo(this.x, this.y);
-    context.lineTo(this.x - 10, this.y + 20);
-    context.lineTo(this.x + 10, this.y + 20);
-    context.fill();
+        context.drawImage(playerimg, this.x - 25, this.y - 10, 50, 50);
     },
 
     shoot: function() {
@@ -172,8 +171,9 @@ function drawPlayer() {
     let canvas = document.getElementById('invaders-canvas');
     let context = canvas.getContext('2d');
 
-    context.fillStyle = "black";
+    context.fillStyle = "blue";
     context.fillRect(0, 0, 800, 600);
+    context.drawImage(ruimteimg, 0, 0, 800, 600);
 
     player.draw(context);
 
